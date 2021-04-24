@@ -1,6 +1,6 @@
 # zipkin-go grpc demo
 
-## docs
+## Docs
 
 [Go微服务全链路跟踪详解](https://zhuanlan.zhihu.com/p/79419529)
 
@@ -15,7 +15,7 @@
 
 
 
-## demo
+## Demo
 
 1. start zipkin
 ```bash
@@ -39,3 +39,15 @@ go run client/client_no_zipkin.go
 
 5. search on web
 `http://localhost:9411/`
+
+
+
+## Opentracing
+
+[zipkin-go opentracing](https://github.com/openzipkin-contrib/zipkin-go-opentracing)
+
+[opentracing-go](https://github.com/opentracing/opentracing-go)
+
+[opentracing-go API doc](https://pkg.go.dev/github.com/opentracing/opentracing-go)
+
+[go-kit opentracing example](https://github.com/go-kit/kit/blob/master/examples/addsvc/cmd/addcli/addcli.go)
