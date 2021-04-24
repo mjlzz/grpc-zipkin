@@ -38,4 +38,4 @@ go run client/client_no_zipkin.go
 ```
 
 5. search on web
-localhost:9411
+`http://localhost:9411/`
