@@ -36,28 +36,25 @@ func main() {
 	defer conn.Close()
 	c := pb.NewGreeterClient(conn)
 
-	name := defaultName
-	if len(os.Args) > 1 {
-		name = os.Args[1]
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
 	endpoint, err2 := zipkin.NewEndpoint("helloService", address)
-	if err != nil {
+	if err2 != nil {
 		log.Printf("new endpoint err", err2)
 	}
 	//span := tracer.StartSpan("client_request2")
 	span, newCtx := tracer.StartSpanFromContext(ctx, "client_request", zipkin.RemoteEndpoint(endpoint), zipkin.Kind(zipkinmodel.Client))
 	//defer span.Finish() // defer will exit quickly, reporter hasn't finish sending
 	log.Printf("%v", newCtx)
-	r, err := c.SayHello(newCtx, &pb.HelloRequest{Name: name})
+	
+	r, err := c.SayHello(newCtx, &pb.HelloRequest{Name: defaultName})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
 	span.Finish()
 
 	log.Printf("Greeting: %s", r.GetMessage())
+	
 	time.Sleep(time.Second) // wait for a while, let reporter finish sending
 }
