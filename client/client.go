@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"log"
-	"os"
+	//"os"
 	"time"
 
 	"google.golang.org/grpc"
@@ -24,9 +24,14 @@ const (
 func main() {
 	// reporter := zipkinlog.NewReporter(log.New(os.Stderr, "", log.LstdFlags))
 	reporter := zipkinHTTP.NewReporter("http://localhost:9411/api/v2/spans")
+	localEndpoint, err3 := zipkin.NewEndpoint("hello-cli", "")
+	if err3 != nil {
+		log.Printf("local ep err: %v", err3)
+	}
 	tracer, _ := zipkin.NewTracer(
 		reporter,
 		zipkin.WithNoopSpan(true),
+		zipkin.WithLocalEndpoint(localEndpoint),
 	)
 
 	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithStatsHandler(zipkingrpc.NewClientHandler(tracer)))
@@ -47,7 +52,7 @@ func main() {
 	span, newCtx := tracer.StartSpanFromContext(ctx, "client_request", zipkin.RemoteEndpoint(endpoint), zipkin.Kind(zipkinmodel.Client))
 	//defer span.Finish() // defer will exit quickly, reporter hasn't finish sending
 	log.Printf("%v", newCtx)
-	
+
 	r, err := c.SayHello(newCtx, &pb.HelloRequest{Name: defaultName})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
@@ -55,6 +60,6 @@ func main() {
 	span.Finish()
 
 	log.Printf("Greeting: %s", r.GetMessage())
-	
+
 	time.Sleep(time.Second) // wait for a while, let reporter finish sending
 }

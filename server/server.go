@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	port = ":50051"
+	port = "localhost:50051"
 )
 
 type server struct {
@@ -52,9 +52,14 @@ func main() {
 
 	//reporter := zipkinlog.NewReporter(log.New(os.Stderr, "", log.LstdFlags))
 	reporter := zipkinHTTP.NewReporter("http://localhost:9411/api/v2/spans")
+	localEndpoint, err2 := zipkin.NewEndpoint("hello-svr", port)
+	if err2 != nil {
+		log.Printf("local ep err: %v", err2)
+	}
 	tracer, _ = zipkin.NewTracer(
 		reporter,
 		zipkin.WithNoopSpan(true),
+		zipkin.WithLocalEndpoint(localEndpoint),
 	)
 
 	//s := grpc.NewServer()
